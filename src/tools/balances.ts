@@ -13,6 +13,7 @@ export function registerBalanceTools(server: McpServer, client: WiseClient) {
         .default("STANDARD")
         .describe("Comma-separated balance types: STANDARD, SAVINGS"),
     },
+    { title: "List Balances", readOnlyHint: true, destructiveHint: false, openWorldHint: true },
     async ({ profileId, types }) => {
       const result = await client.get(`/v4/profiles/${profileId}/balances`, { types });
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
@@ -26,6 +27,7 @@ export function registerBalanceTools(server: McpServer, client: WiseClient) {
       profileId: z.number().describe("Profile ID"),
       balanceId: z.number().describe("Balance ID"),
     },
+    { title: "Get Balance", readOnlyHint: true, destructiveHint: false, openWorldHint: true },
     async ({ profileId, balanceId }) => {
       const result = await client.get(`/v4/profiles/${profileId}/balances/${balanceId}`);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };

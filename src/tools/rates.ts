@@ -10,6 +10,7 @@ export function registerRateTools(server: McpServer, client: WiseClient) {
       source: z.string().describe("Source currency code, e.g. EUR"),
       target: z.string().describe("Target currency code, e.g. HUF"),
     },
+    { title: "Get Exchange Rate", readOnlyHint: true, destructiveHint: false, openWorldHint: true },
     async ({ source, target }) => {
       const result = await client.get("/v1/rates", { source, target });
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
@@ -29,6 +30,7 @@ export function registerRateTools(server: McpServer, client: WiseClient) {
         .default("day")
         .describe("Interval grouping: day, hour, or minute"),
     },
+    { title: "Get Exchange Rate History", readOnlyHint: true, destructiveHint: false, openWorldHint: true },
     async ({ source, target, from, to, group }) => {
       const result = await client.get("/v1/rates", { source, target, from, to, group });
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };

@@ -1,4 +1,4 @@
-const BASE_URL = "https://api.wise.com";
+const DEFAULT_BASE_URL = "https://api.wise.com";
 
 export class WiseApiError extends Error {
   constructor(
@@ -12,9 +12,11 @@ export class WiseApiError extends Error {
 
 export class WiseClient {
   private token: string;
+  private baseUrl: string;
 
-  constructor(token: string) {
+  constructor(token: string, baseUrl?: string) {
     this.token = token;
+    this.baseUrl = baseUrl || DEFAULT_BASE_URL;
   }
 
   private async request(
@@ -23,7 +25,7 @@ export class WiseClient {
     body?: unknown,
     query?: Record<string, string | number | boolean | undefined>,
   ): Promise<unknown> {
-    const url = new URL(`${BASE_URL}${path}`);
+    const url = new URL(`${this.baseUrl}${path}`);
     if (query) {
       for (const [key, value] of Object.entries(query)) {
         if (value !== undefined) {

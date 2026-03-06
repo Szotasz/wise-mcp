@@ -19,6 +19,7 @@ export function registerQuoteTools(server: McpServer, client: WiseClient) {
         .optional()
         .describe("Amount in target currency (provide this OR sourceAmount)"),
     },
+    { title: "Create Quote", readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     async ({ profileId, sourceCurrency, targetCurrency, sourceAmount, targetAmount }) => {
       const body: Record<string, unknown> = {
         profile: profileId,
@@ -39,6 +40,7 @@ export function registerQuoteTools(server: McpServer, client: WiseClient) {
     "get_quote",
     "Get an existing quote by ID",
     { quoteId: z.number().describe("Quote ID") },
+    { title: "Get Quote", readOnlyHint: true, destructiveHint: false, openWorldHint: true },
     async ({ quoteId }) => {
       const result = await client.get(`/v1/quotes/${quoteId}`);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
@@ -60,6 +62,7 @@ export function registerQuoteTools(server: McpServer, client: WiseClient) {
         .optional()
         .describe("Amount in target currency (provide this OR sourceAmount)"),
     },
+    { title: "Get Temporary Quote", readOnlyHint: true, destructiveHint: false, openWorldHint: true },
     async ({ sourceCurrency, targetCurrency, sourceAmount, targetAmount }) => {
       const query: Record<string, string | number | undefined> = {
         source: sourceCurrency,

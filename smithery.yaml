@@ -9,6 +9,14 @@ startCommand:
         type: string
         title: Wise API Token
         description: Personal API token from wise.com/settings/api-tokens
+      WISE_ENV:
+        type: string
+        title: Environment
+        description: Wise environment (live or sandbox)
+        enum:
+          - live
+          - sandbox
+        default: live
   commandFunction:
     file: smithery.js
     function: startCommand

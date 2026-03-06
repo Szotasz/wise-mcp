@@ -10,6 +10,7 @@ export function registerRecipientTools(server: McpServer, client: WiseClient) {
       profileId: z.number().describe("Profile ID"),
       currency: z.string().optional().describe("Filter by currency code, e.g. HUF"),
     },
+    { title: "List Recipients", readOnlyHint: true, destructiveHint: false, openWorldHint: true },
     async ({ profileId, currency }) => {
       const query: Record<string, string | number | undefined> = { profile: profileId };
       if (currency) query.currency = currency;
@@ -22,6 +23,7 @@ export function registerRecipientTools(server: McpServer, client: WiseClient) {
     "get_recipient",
     "Get a specific recipient account by ID",
     { accountId: z.number().describe("Recipient account ID") },
+    { title: "Get Recipient", readOnlyHint: true, destructiveHint: false, openWorldHint: true },
     async ({ accountId }) => {
       const result = await client.get(`/v1/accounts/${accountId}`);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
@@ -46,6 +48,7 @@ export function registerRecipientTools(server: McpServer, client: WiseClient) {
         .optional()
         .describe("Whether this account belongs to you"),
     },
+    { title: "Create Recipient", readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     async ({ profileId, currency, type, accountHolderName, details, ownedByCustomer }) => {
       const body: Record<string, unknown> = {
         profile: profileId,
@@ -64,6 +67,7 @@ export function registerRecipientTools(server: McpServer, client: WiseClient) {
     "delete_recipient",
     "Delete (deactivate) a recipient account",
     { accountId: z.number().describe("Recipient account ID") },
+    { title: "Delete Recipient", readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: true },
     async ({ accountId }) => {
       await client.delete(`/v1/accounts/${accountId}`);
       return { content: [{ type: "text", text: `Recipient ${accountId} deleted successfully.` }] };
@@ -78,6 +82,7 @@ export function registerRecipientTools(server: McpServer, client: WiseClient) {
       target: z.string().describe("Target currency code, e.g. HUF"),
       sourceAmount: z.number().describe("Amount in source currency"),
     },
+    { title: "Get Account Requirements", readOnlyHint: true, destructiveHint: false, openWorldHint: true },
     async ({ source, target, sourceAmount }) => {
       const result = await client.get("/v1/account-requirements", {
         source,

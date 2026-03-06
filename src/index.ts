@@ -10,14 +10,25 @@ import { registerTransferTools } from "./tools/transfers.js";
 
 export const configSchema = z.object({
   WISE_API_TOKEN: z.string().describe("Wise Personal API token (get it from wise.com/settings/api-tokens)"),
+  WISE_ENV: z.enum(["live", "sandbox"]).default("live").describe("Wise environment: live (default) or sandbox for testing"),
 });
 
 type SmitheryConfig = z.infer<typeof configSchema>;
+
+const BASE_URLS: Record<string, string> = {
+  live: "https://api.wise.com",
+  sandbox: "https://api.sandbox.transferwise.tech",
+};
 
 function getToken(config?: Partial<SmitheryConfig>): string {
   const token = config?.WISE_API_TOKEN || process.env.WISE_API_TOKEN;
   if (!token) throw new Error("Missing required config: WISE_API_TOKEN");
   return token;
+}
+
+function getBaseUrl(config?: Partial<SmitheryConfig>): string {
+  const env = config?.WISE_ENV || process.env.WISE_ENV || "live";
+  return BASE_URLS[env] || BASE_URLS.live;
 }
 
 export default function createServer({ config }: { config: Partial<SmitheryConfig> }) {
@@ -28,7 +39,7 @@ export default function createServer({ config }: { config: Partial<SmitheryConfi
     websiteUrl: "https://github.com/Szotasz/wise-mcp",
   });
 
-  const client = new WiseClient(getToken(config));
+  const client = new WiseClient(getToken(config), getBaseUrl(config));
 
   registerProfileTools(server, client);
   registerBalanceTools(server, client);
@@ -94,6 +105,7 @@ export function createSandboxServer() {
   return createServer({
     config: {
       WISE_API_TOKEN: "sandbox",
+      WISE_ENV: "sandbox" as const,
     },
   });
 }
