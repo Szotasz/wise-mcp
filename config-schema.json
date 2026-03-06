@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "required": ["WISE_API_TOKEN"],
+  "properties": {
+    "WISE_API_TOKEN": {
+      "type": "string",
+      "title": "Wise API Token",
+      "description": "Personal API token from wise.com/settings/api-tokens"
+    }
+  }
+}

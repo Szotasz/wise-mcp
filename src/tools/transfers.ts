@@ -1,0 +1,109 @@
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
+import { WiseClient } from "../wise-client.js";
+import { randomUUID } from "node:crypto";
+
+export function registerTransferTools(server: McpServer, client: WiseClient) {
+  server.tool(
+    "list_transfers",
+    "List transfers for a profile with optional filters",
+    {
+      profileId: z.number().describe("Profile ID"),
+      status: z
+        .string()
+        .optional()
+        .describe("Filter by status: incoming_payment_waiting, processing, funds_converted, outgoing_payment_sent, cancelled, etc."),
+      createdDateStart: z
+        .string()
+        .optional()
+        .describe("Filter start date, ISO format e.g. 2024-01-01T00:00:00.000Z"),
+      createdDateEnd: z
+        .string()
+        .optional()
+        .describe("Filter end date, ISO format"),
+      limit: z.number().default(10).describe("Results per page (default 10)"),
+      offset: z.number().default(0).describe("Pagination offset"),
+    },
+    async ({ profileId, status, createdDateStart, createdDateEnd, limit, offset }) => {
+      const query: Record<string, string | number | undefined> = {
+        profile: profileId,
+        limit,
+        offset,
+      };
+      if (status) query.status = status;
+      if (createdDateStart) query.createdDateStart = createdDateStart;
+      if (createdDateEnd) query.createdDateEnd = createdDateEnd;
+
+      const result = await client.get("/v1/transfers", query);
+      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    },
+  );
+
+  server.tool(
+    "get_transfer",
+    "Get a specific transfer by ID",
+    { transferId: z.number().describe("Transfer ID") },
+    async ({ transferId }) => {
+      const result = await client.get(`/v1/transfers/${transferId}`);
+      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    },
+  );
+
+  server.tool(
+    "create_transfer",
+    "Create a new transfer. Requires a quote ID and recipient account ID. NOTE: In EU/UK, funding from balance via personal token is restricted by PSD2.",
+    {
+      targetAccount: z.number().describe("Recipient account ID"),
+      quoteId: z.number().describe("Quote ID (create a quote first)"),
+      reference: z.string().optional().describe("Payment reference visible to recipient"),
+    },
+    async ({ targetAccount, quoteId, reference }) => {
+      const body: Record<string, unknown> = {
+        targetAccount,
+        quote: quoteId,
+        customerTransactionId: randomUUID(),
+      };
+      if (reference) {
+        body.details = { reference };
+      }
+      const result = await client.post("/v1/transfers", body);
+      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    },
+  );
+
+  server.tool(
+    "fund_transfer",
+    "Fund a transfer from your Wise balance. NOTE: This may NOT work with personal tokens in EU/UK due to PSD2 regulations.",
+    {
+      profileId: z.number().describe("Profile ID"),
+      transferId: z.number().describe("Transfer ID"),
+    },
+    async ({ profileId, transferId }) => {
+      const result = await client.post(
+        `/v3/profiles/${profileId}/transfers/${transferId}/payments`,
+        { type: "BALANCE" },
+      );
+      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    },
+  );
+
+  server.tool(
+    "cancel_transfer",
+    "Cancel a transfer (only possible if not yet completed)",
+    { transferId: z.number().describe("Transfer ID") },
+    async ({ transferId }) => {
+      const result = await client.put(`/v1/transfers/${transferId}/cancel`);
+      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    },
+  );
+
+  server.tool(
+    "get_delivery_estimate",
+    "Get the estimated delivery date for a transfer",
+    { transferId: z.number().describe("Transfer ID") },
+    async ({ transferId }) => {
+      const result = await client.get(`/v1/delivery-estimates/${transferId}`);
+      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    },
+  );
+}
