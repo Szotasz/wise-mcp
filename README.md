@@ -2,53 +2,55 @@
 
 MCP (Model Context Protocol) szerver a [Wise (TransferWise)](https://wise.com) API-hoz.
 
-Ez a szerver lehetovve teszi, hogy AI asszisztensek (pl. Claude) lekerdezhessek a Wise szamla egyenleget, arfolyamokat, atutalasokat es kedvezmenyezetteket.
+Ez a szerver lehetővé teszi, hogy AI asszisztensek (pl. Claude) lekérdezhessék a Wise számla egyenlegét, árfolyamokat, átutalásokat és kedvezményezetteket.
 
-## Tavoli hasznalat (Smithery)
+## Távoli használat (Smithery)
 
-A legegyszerubb mod a szerver hasznalatanak, ha a Smithery-n keresztul csatlakozol -- nem kell semmit telepitened:
+A legegyszerűbb módja a szerver használatának, ha a Smithery-n keresztül csatlakozol — nem kell semmit telepítened:
 
 [![Smithery Badge](https://smithery.ai/badge/aiamindennapokban/wise-mcp)](https://smithery.ai/servers/aiamindennapokban/wise-mcp)
 
-**[Csatlakozas a Smithery-n](https://smithery.ai/servers/aiamindennapokban/wise-mcp)**
+**[Csatlakozás a Smithery-n](https://smithery.ai/servers/aiamindennapokban/wise-mcp)**
 
-A Smithery automatikusan bekeri a Wise API tokenedet es kezeli a kapcsolatot.
+A Smithery automatikusan bekéri a Wise API tokenedet és kezeli a kapcsolatot.
 
-## Funkciok
+## Funkciók
 
-### Lekerdező eszkozok (csak olvasas)
-- **list_profiles** - Profilok (szemelyes/uzleti) listazasa
-- **get_profile** - Profil adatainak lekerdezese
-- **list_balances** - Egyenlegek listazasa penznem szerint
-- **get_balance** - Adott egyenleg reszletei
-- **get_exchange_rate** - Aktualis arfolyam ket penznem kozott
-- **get_exchange_rate_history** - Arfolyam-torteneti adatok
-- **create_quote** - Arajanlatkerdezes (dij es arfolyam)
-- **get_quote** / **get_temporary_quote** - Arajanlat lekerdezese
-- **list_recipients** - Kedvezmenyezettek listazasa
-- **get_recipient** - Kedvezmenyezett reszletei
-- **get_account_requirements** - Bankszamla-mezo kovetelmenyek adott penznemhez
-- **list_transfers** - Atutalasok listazasa szurokkel
-- **get_transfer** - Atutalas reszletei
-- **get_delivery_estimate** - Becsult erkezesi ido
+### Lekérdező eszközök (csak olvasás)
+- **list_profiles** - Profilok (személyes/üzleti) listázása
+- **get_profile** - Profil adatainak lekérdezése
+- **list_balances** - Egyenlegek listázása pénznem szerint
+- **get_balance** - Adott egyenleg részletei
+- **get_exchange_rate** - Aktuális árfolyam két pénznem között
+- **get_exchange_rate_history** - Árfolyam-történeti adatok
+- **create_quote** - Árajánlatkérés (díj és árfolyam)
+- **get_quote** / **get_temporary_quote** - Árajánlat lekérdezése
+- **list_recipients** - Kedvezményezettek listázása
+- **get_recipient** - Kedvezményezett részletei
+- **get_account_requirements** - Bankszámla-mező követelmények adott pénznemhez
+- **list_transfers** - Átutalások listázása szűrőkkel
+- **get_transfer** - Átutalás részletei
+- **get_delivery_estimate** - Becsült érkezési idő
 
-### Irasi eszkozok (penzforgalom)
-- **create_transfer** - Atutalas letrehozasa
-- **fund_transfer** - Atutalas finanszirozasa egyenlegbol
-- **create_recipient** - Uj kedvezmenyezett felvetele
-- **delete_recipient** - Kedvezmenyezett torlese
-- **cancel_transfer** - Atutalas visszavonasa
+### Írási eszközök (pénzforgalom)
+- **create_transfer** - Átutalás létrehozása
+- **fund_transfer** - Átutalás finanszírozása egyenlegből
+- **create_recipient** - Új kedvezményezett felvétele
+- **delete_recipient** - Kedvezményezett törlése
+- **cancel_transfer** - Átutalás visszavonása
 
-## Elofeltetel
+> **Figyelmeztetés:** Az írási eszközök valós pénzmozgást indíthatnak! Javasoljuk, hogy ezeket az eszközöket csak tudatosan engedélyezd. A legtöbb MCP kliens (pl. Claude Desktop, Claude Code) lehetőséget ad az egyes eszközök egyenkénti engedélyezésére vagy tiltására. Ha csak egyenleg-lekérdezésre és árfolyam-ellenőrzésre van szükséged, tiltsd le az írási eszközöket.
 
-Wise Personal API token szukseges. Igenyelheto itt:
+## Előfeltétel
+
+Wise Personal API token szükséges. Igényelhető itt:
 - https://wise.com/settings/api-tokens
 
-## Helyi telepites
+## Helyi telepítés
 
-Ha inkabb lokalisan szeretned futtatni a szervert:
+Ha inkább lokálisan szeretnéd futtatni a szervert:
 
-### 1. Telepites
+### 1. Telepítés
 
 ```bash
 git clone https://github.com/Szotasz/wise-mcp.git
@@ -57,29 +59,29 @@ npm install
 npm run build
 ```
 
-### 2. Konfiguralas
+### 2. Konfigurálás
 
-Masold az `.env.example` fajlt `.env` neven es toltsd ki:
+Másold az `.env.example` fájlt `.env` néven és töltsd ki:
 
 ```bash
 cp .env.example .env
 ```
 
-Szukseges kornyezeti valtozo:
-| Valtozo | Leiras |
+Szükséges környezeti változó:
+| Változó | Leírás |
 |---|---|
 | `WISE_API_TOKEN` | Wise Personal API token |
 
-### 3. Hozzaadas a Claude Code-hoz
+### 3. Hozzáadás a Claude Code-hoz
 
-Add hozza a `~/.claude/settings.json` fajlhoz:
+Add hozzá a `~/.claude/settings.json` fájlhoz:
 
 ```json
 {
   "mcpServers": {
     "wise": {
       "command": "node",
-      "args": ["/eleresi/ut/wise-mcp/dist/cli.js"],
+      "args": ["/elérési/út/wise-mcp/dist/cli.js"],
       "env": {
         "WISE_API_TOKEN": "your_token_here"
       }
@@ -88,20 +90,36 @@ Add hozza a `~/.claude/settings.json` fajlhoz:
 }
 ```
 
-## Hasznalati peldak
+Az írási eszközök tiltásához add hozzá a `settings.local.json` fájlhoz:
 
-Konfiguralas utan a kovetkezoket kerdezheted Claude-tol:
+```json
+{
+  "permissions": {
+    "deny": [
+      "mcp__wise__create_transfer",
+      "mcp__wise__fund_transfer",
+      "mcp__wise__create_recipient",
+      "mcp__wise__delete_recipient",
+      "mcp__wise__cancel_transfer"
+    ]
+  }
+}
+```
 
-- "Mennyi penz van a Wise szamlamon?"
-- "Mi az aktualis EUR/HUF arfolyam?"
-- "Listazd az utolso atutalasaimat"
-- "Milyen penznemekben van egyenlegem?"
+## Használati példák
 
-## Tamogatas
+Konfigurálás után a következőket kérdezheted Claude-tól:
 
-Ha hasznosnak talaltad ezt a projektet, tamogathatod a fejlesztest:
+- "Mennyi pénz van a Wise számlámon?"
+- "Mi az aktuális EUR/HUF árfolyam?"
+- "Listázd az utolsó átutalásaimat"
+- "Milyen pénznemekben van egyenlegem?"
 
-[![Tamogass a Donably-n](https://img.shields.io/badge/T%C3%A1mogat%C3%A1s-Donably-18b8c4)](https://www.donably.com/ai-a-mindennapokban-szabolccsal)
+## Támogatás
+
+Ha hasznosnak találtad ezt a projektet, támogathatod a fejlesztést:
+
+[![Támogass a Donably-n](https://img.shields.io/badge/T%C3%A1mogat%C3%A1s-Donably-18b8c4)](https://www.donably.com/ai-a-mindennapokban-szabolccsal)
 
 ---
 
@@ -113,7 +131,7 @@ This server allows AI assistants like Claude to query Wise account balances, exc
 
 ## Remote Usage (Smithery)
 
-The easiest way to use this server is through Smithery -- no installation needed:
+The easiest way to use this server is through Smithery — no installation needed:
 
 [![Smithery Badge](https://smithery.ai/badge/aiamindennapokban/wise-mcp)](https://smithery.ai/servers/aiamindennapokban/wise-mcp)
 
@@ -145,6 +163,8 @@ Smithery will automatically prompt you for your Wise API token and manage the co
 - **create_recipient** - Create a new recipient account
 - **delete_recipient** - Delete (deactivate) a recipient account
 - **cancel_transfer** - Cancel a transfer (if not yet completed)
+
+> **Warning:** Write tools can initiate real financial transactions! We recommend enabling these tools only when you explicitly need them. Most MCP clients (e.g. Claude Desktop, Claude Code) allow you to enable or disable individual tools. If you only need balance checks and exchange rates, disable the write tools.
 
 ## Prerequisites
 
@@ -191,6 +211,22 @@ Add to your `~/.claude/settings.json`:
         "WISE_API_TOKEN": "your_token_here"
       }
     }
+  }
+}
+```
+
+To deny write tools, add to your `settings.local.json`:
+
+```json
+{
+  "permissions": {
+    "deny": [
+      "mcp__wise__create_transfer",
+      "mcp__wise__fund_transfer",
+      "mcp__wise__create_recipient",
+      "mcp__wise__delete_recipient",
+      "mcp__wise__cancel_transfer"
+    ]
   }
 }
 ```
