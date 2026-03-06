@@ -1,6 +1,6 @@
 # Wise MCP Szerver
 
-MCP (Model Context Protocol) szerver a [Wise (TransferWise)](https://wise.com) API-hoz.
+MCP (Model Context Protocol) szerver a [Wise (TransferWise)](https://wise.com/invite/ihpn/szabolcss297) API-hoz.
 
 Ez a szerver lehetővé teszi, hogy AI asszisztensek (pl. Claude) lekérdezhessék a Wise számla egyenlegét, árfolyamokat, átutalásokat és kedvezményezetteket.
 
@@ -125,7 +125,7 @@ Ha hasznosnak találtad ezt a projektet, támogathatod a fejlesztést:
 
 # Wise MCP Server (English)
 
-MCP (Model Context Protocol) server for the [Wise (TransferWise)](https://wise.com) API.
+MCP (Model Context Protocol) server for the [Wise (TransferWise)](https://wise.com/invite/ihpn/szabolcss297) API.
 
 This server allows AI assistants like Claude to query Wise account balances, exchange rates, transfers, and recipients.
 
