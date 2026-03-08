@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { WiseClient } from "../wise-client.js";
-import { randomUUID } from "node:crypto";
+
 
 export function registerTransferTools(server: McpServer, client: WiseClient) {
   server.tool(
@@ -53,18 +53,19 @@ export function registerTransferTools(server: McpServer, client: WiseClient) {
 
   server.tool(
     "create_transfer",
-    "Create a new transfer. Requires a quote ID and recipient account ID. NOTE: In EU/UK, funding from balance via personal token is restricted by PSD2.",
+    "Create a new transfer. Requires a quote ID and recipient account ID. The customerTransactionId ensures idempotency — reuse the same value when retrying a failed request to avoid duplicate transfers. NOTE: In EU/UK, funding from balance via personal token is restricted by PSD2.",
     {
       targetAccount: z.number().describe("Recipient account ID"),
       quoteId: z.number().describe("Quote ID (create a quote first)"),
+      customerTransactionId: z.string().uuid().describe("Unique UUID for idempotency. Reuse the same value when retrying to prevent duplicate transfers."),
       reference: z.string().optional().describe("Payment reference visible to recipient"),
     },
-    { title: "Create Transfer", readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
-    async ({ targetAccount, quoteId, reference }) => {
+    { title: "Create Transfer", readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: true },
+    async ({ targetAccount, quoteId, customerTransactionId, reference }) => {
       const body: Record<string, unknown> = {
         targetAccount,
         quote: quoteId,
-        customerTransactionId: randomUUID(),
+        customerTransactionId,
       };
       if (reference) {
         body.details = { reference };
@@ -81,7 +82,7 @@ export function registerTransferTools(server: McpServer, client: WiseClient) {
       profileId: z.number().describe("Profile ID"),
       transferId: z.number().describe("Transfer ID"),
     },
-    { title: "Fund Transfer", readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
+    { title: "Fund Transfer", readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: true },
     async ({ profileId, transferId }) => {
       const result = await client.post(
         `/v3/profiles/${profileId}/transfers/${transferId}/payments`,
